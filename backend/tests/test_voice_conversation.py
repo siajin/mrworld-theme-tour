@@ -1,6 +1,8 @@
 from datetime import date
 from uuid import uuid4
 
+import pytest
+
 from sqlalchemy import select
 
 from app.models import InventoryItem, MealAddon
@@ -36,6 +38,32 @@ def test_professor_conversation_keeps_selections_and_actual_quote(client, demo_h
     assert state['ready_to_book'] and state['booking_options']['travelers_count'] == 2
     quote = client.post('/api/v1/bookings/quote', headers=demo_headers, json=state['booking_options'])
     assert quote.status_code == 200 and quote.json()['total'] == state['state']['quoted_total']
+
+
+@pytest.mark.parametrize('said,coffee,champagne', [
+    ('샴페인 다섯 병 추가해 줘', None, 5),
+    ('샴페인 5병 추가해 줘', None, 5),
+    ('커피 두 포트 샴페인 다섯 병 추가', 2, 5),
+    ('두 명만 할 건데 커피 두 포트랑 샴페인 다섯 병을 추가해 봐', 2, 5),
+    ('식사 시 커피 두 포트 샴페인 다섯 병 추가해 줘', 2, 5),
+    ('커피 세 포트 샴페인 열다섯 병 추가', 3, 15),
+])
+def test_addon_quantities_never_become_traveler_counts(client, db, said, coffee, champagne):
+    first = turn(client, '허니문 프리미엄 2명')
+    result = turn(client, said, first)
+    assert result['booking_options'], result['reply']
+    assert result['booking_options']['travelers_count'] == 2
+    addons = {db.get(MealAddon, a['meal_addon_id']).label: a['qty'] for a in result['booking_options']['addons']}
+    assert next(qty for label, qty in addons.items() if '샴페인' in label) == champagne
+    if coffee is not None:
+        assert next(qty for label, qty in addons.items() if '커피' in label) == coffee
+    repeat = turn(client, said, result)
+    assert repeat['state']['addons'] == result['state']['addons']
+
+
+def test_explicit_five_travelers_still_rejected(client):
+    result = turn(client, '다섯 명으로 바꿔줘', turn(client, '허니문 프리미엄 2명'))
+    assert '최대 2명' in result['reply'] and result['state']['travelers_count'] == 2
 
 
 def test_changes_and_no_do_not_finalize_early(client):

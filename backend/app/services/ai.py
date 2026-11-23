@@ -155,7 +155,9 @@ class QueryParser:
             parsed.keywords.append(f"{parsed.travelers_count}명")
             return
         for word, count in KOREAN_COUNTS.items():
-            if word in text:
+            # Require a people unit for bare numbers: '다섯 병' is an option quantity.
+            matched = re.search(re.escape(word) + r"\s*(?:명|인(?!분|당)|사람)", text) if word in {"둘", "다섯", "여섯"} else word in text
+            if matched:
                 parsed.travelers_count = count
                 parsed.keywords.append(word)
                 return

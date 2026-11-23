@@ -92,8 +92,15 @@ class VoiceConversationService:
                 return True, f"지금은 {canonical} 추가옵션을 선택할 수 없어요. 다른 옵션을 말씀해 주세요."
             end = words[i + 1][0] if i + 1 < len(words) else len(compact)
             part = compact[start:end]
-            match = re.search(r"(\d{1,3})\s*(?:포트|병|잔|개|인분|세트)?", part)
-            qty = int(match.group(1)) if match else 2 if any(w in part for w in ("두병", "두잔", "두포트", "두개")) else 1
+            counts = {"스무": 20, "열아홉": 19, "열여덟": 18, "열일곱": 17, "열여섯": 16,
+                      "열다섯": 15, "열네": 14, "열세": 13, "열두": 12, "열한": 11,
+                      "열": 10, "아홉": 9, "여덟": 8, "일곱": 7, "여섯": 6,
+                      "다섯": 5, "네": 4, "세": 3, "두": 2, "한": 1, "영": 0}
+            quantity = "|".join(sorted(counts, key=len, reverse=True))
+            match = re.search(r"(\d{1,3}|" + quantity + r")(?:포트|병|잔|개|인분|세트)", part)
+            if not match:
+                match = re.search(r"(\d{1,3})(?=추가|$)", part)
+            qty = (int(match.group(1)) if match.group(1).isdigit() else counts[match.group(1)]) if match else 1
             if qty > 20:
                 return True, "식사 추가옵션은 한 종류당 20개 이내로 말씀해 주세요."
             if any(w in part for w in ("빼", "제외", "취소", "삭제", "추가하지마", "안넣")) or qty == 0:
