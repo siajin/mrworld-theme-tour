@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 from app.schemas.common import StyleCode
 from app.schemas.package import PackageCard
+from app.schemas.booking import AddonIn, QuoteRequest
 
 
 VoiceContext = Literal["home", "search", "theme", "package", "booking", "me", "other"]
@@ -67,3 +68,32 @@ class ChatIn(BaseModel):
 class ChatOut(BaseModel):
     reply: str
     packages: list[PackageCard]
+
+
+class ConversationState(BaseModel):
+    """화면에서 보관하는 예약 대화의 선택값. 실제 예약 권한이나 재고를 보장하지 않는다."""
+
+    stage: Literal["greeting", "occasion", "theme", "style", "options", "confirm", "additional", "ready"] = "greeting"
+    theme_slug: Literal["honeymoon", "parents", "golf", "trekking"] | None = None
+    region: str | None = Field(default=None, max_length=100)
+    desired_date: str | None = Field(default=None, max_length=10, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    travelers_count: int | None = Field(default=None, ge=1, le=25)
+    style_code: StyleCode | None = None
+    package_id: int | None = Field(default=None, ge=1)
+    departure_id: int | None = Field(default=None, ge=1)
+    addons: list[AddonIn] = Field(default_factory=list, max_length=10)
+    quoted_total: int | None = Field(default=None, ge=0)
+    quoted_deposit: int | None = Field(default=None, ge=0)
+
+
+class ConversationIn(BaseModel):
+    text: str = Field(default="", max_length=1000)
+    state: ConversationState | None = None
+
+
+class ConversationOut(BaseModel):
+    reply: str
+    state: ConversationState
+    packages: list[PackageCard] = Field(default_factory=list)
+    ready_to_book: bool = False
+    booking_options: QuoteRequest | None = None

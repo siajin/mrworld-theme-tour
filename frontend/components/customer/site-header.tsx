@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { clsx } from "clsx";
-import { LogOut, UserRound } from "lucide-react";
+import { LogOut, Mic, UserRound } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/components/ui/toast";
-import { VoiceButton } from "@/components/voice";
+import { VoiceButton, useVoice } from "@/components/voice";
 import { Logo } from "./logo";
 
 const NAV = [
@@ -20,6 +20,7 @@ export function SiteHeader() {
   const router = useRouter();
   const { user, loading, logout } = useAuth();
   const toast = useToast();
+  const voice = useVoice();
 
   const onLogout = () => {
     logout();
@@ -51,6 +52,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <button type="button" onClick={voice.openConversation} className="inline-flex h-9 items-center gap-1 rounded-lg bg-primary-soft px-2.5 text-[12px] font-bold text-primary md:text-[13px]" aria-label="음성 예약"><Mic className="size-4" aria-hidden />음성 예약</button>
           {/* 데스크톱 음성 명령 (모바일은 하단 탭 바의 마이크) */}
           <span className="hidden md:inline-flex">
             <VoiceButton />

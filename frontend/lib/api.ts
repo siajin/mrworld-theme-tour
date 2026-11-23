@@ -29,6 +29,8 @@ import type {
   Trip,
   User,
   VoiceContext,
+  VoiceConversationResult,
+  VoiceConversationState,
 } from "./types";
 
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "/api/v1";
@@ -214,6 +216,7 @@ export const api = {
   ai: {
     parse: (text: string, context: VoiceContext = "home") => post<AIParseResult>("/ai/parse", { text, context }),
     chat: (messages: ChatMessage[]) => post<ChatResponse>("/ai/chat", { messages }),
+    conversation: (text: string, state: VoiceConversationState | null = null) => post<VoiceConversationResult>("/ai/conversation", { text, state }),
   },
 
   // ── 직원

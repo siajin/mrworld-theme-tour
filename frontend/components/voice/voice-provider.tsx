@@ -11,6 +11,7 @@ import { VoiceConfirmSheet } from "./voice-confirm-sheet";
 import { VoiceHelpSheet } from "./voice-help-sheet";
 import { searchHrefFromParse } from "./search-href";
 import { useSpeechRecognition } from "./use-speech-recognition";
+import { VoiceBookingDialog } from "./voice-booking-dialog";
 
 /** 화면별 명령 처리기. true 를 돌려주면 처리 완료(토스트는 처리기가 띄운다), false 면 "이 화면에서는 쓸 수 없는 명령" */
 export type VoiceHandle = (result: AIParseResult, transcript: string) => boolean | Promise<boolean>;
@@ -28,6 +29,8 @@ interface VoiceApi {
   state: VoiceState;
   /** 마이크 열기. 미지원 브라우저면 토스트만 띄운다. */
   open: () => void;
+  /** 질문과 답변을 이어 가는 음성 예약 열기. */
+  openConversation: () => void;
   /** 현재 화면 컨텍스트 (/ai/parse 의 context) */
   context: VoiceContext;
   setContext: (c: VoiceContext) => void;
@@ -52,6 +55,7 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
   const [transcript, setTranscript] = useState("");
   const [result, setResult] = useState<AIParseResult | null>(null);
   const [context, setContextState] = useState<VoiceContext>("other");
+  const [conversationOpen, setConversationOpen] = useState(false);
 
   const handlersRef = useRef<VoiceHandler[]>([]);
   const contextRef = useRef<VoiceContext>("other");
@@ -180,6 +184,7 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => () => close(), [pathname, close]);
 
   const open = useCallback(() => {
+    setConversationOpen(false);
     if (!supported) {
       toast("이 브라우저는 음성 인식을 지원하지 않아요. Chrome 또는 Edge에서 이용해 주세요");
       return;
@@ -190,6 +195,11 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
     setPhase("listening");
     sStart();
   }, [supported, sStart, toast]);
+
+  const openConversation = useCallback(() => {
+    close();
+    setConversationOpen(true);
+  }, [close]);
 
   const onConfirm = useCallback(async () => {
     if (!result) return;
@@ -206,13 +216,14 @@ export function VoiceProvider({ children }: { children: React.ReactNode }) {
   }, [open]);
 
   const value = useMemo<VoiceApi>(
-    () => ({ supported, state: phase, open, context, setContext, registerHandler }),
-    [supported, phase, open, context, setContext, registerHandler],
+    () => ({ supported, state: phase, open, openConversation, context, setContext, registerHandler }),
+    [supported, phase, open, openConversation, context, setContext, registerHandler],
   );
 
   return (
     <VoiceCtx.Provider value={value}>
       {children}
+      {conversationOpen && <VoiceBookingDialog onClose={() => setConversationOpen(false)} />}
       <VoiceListeningSheet
         open={phase === "listening" || phase === "processing"}
         interim={phase === "processing" ? transcript : interim}

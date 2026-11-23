@@ -413,3 +413,26 @@ export interface ChatResponse {
   reply: string;
   packages: PackageCard[];
 }
+
+/** 대화 내용 대신 예약에 필요한 선택값만 다음 질문으로 전달한다. */
+export interface VoiceConversationState {
+  stage: "greeting" | "occasion" | "theme" | "style" | "options" | "confirm" | "additional" | "ready";
+  theme_slug?: string | null;
+  region?: string | null;
+  desired_date?: string | null;
+  travelers_count?: number | null;
+  style_code?: StyleCode | null;
+  package_id?: number | null;
+  departure_id?: number | null;
+  addons?: { meal_addon_id: number; qty: number }[];
+  quoted_total?: number | null;
+  quoted_deposit?: number | null;
+}
+
+export interface VoiceConversationResult {
+  reply: string;
+  state: VoiceConversationState;
+  packages: PackageCard[];
+  ready_to_book: boolean;
+  booking_options: QuoteRequest | null;
+}
