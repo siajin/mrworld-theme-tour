@@ -1,0 +1,138 @@
+@import "tailwindcss";
+
+/* ── 디자인 토큰 (Wanderly 시안 기준) ─────────────────────────── */
+:root {
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-soft: #eff4ff;
+  --primary-dark: #1e3a8a;
+  --accent: #f97316;
+  --success: #16a34a;
+  --success-soft: #ecfdf3;
+  --danger: #dc2626;
+  --danger-soft: #fef2f2;
+  --warning: #d97706;
+  --warning-soft: #fffbeb;
+  --bg: #f6f8fb;
+  --surface: #ffffff;
+  --text: #0f172a;
+  --text-2: #334155;
+  --muted: #64748b;
+  --muted-2: #94a3b8;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --shadow-card: 0 4px 16px rgba(15, 23, 42, 0.06);
+  --shadow-float: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --radius-card: 16px;
+  --radius-input: 10px;
+  --radius-btn: 10px;
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-dark: var(--primary-dark);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--text);
+  --color-ink-2: var(--text-2);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --shadow-card: var(--shadow-card);
+  --shadow-float: var(--shadow-float);
+  --radius-card: var(--radius-card);
+  --radius-input: var(--radius-input);
+  --radius-btn: var(--radius-btn);
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
+    "Malgun Gothic", "Segoe UI", Roboto, sans-serif;
+}
+
+html {
+  color-scheme: light;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 숫자 정렬 */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 스크롤바 숨김(가로 칩 스크롤) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* 음성 인식 파형 애니메이션 (2단계용, 컴포넌트에서만 사용) */
+@keyframes voice-bar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.voice-bar {
+  animation: voice-bar 0.9s ease-in-out infinite;
+  transform-origin: center;
+}
+
+/* 마이크 버튼: 듣는 중 은은하게 퍼지는 링 */
+@keyframes voice-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+.voice-ring {
+  animation: voice-ring 1.4s ease-out infinite;
+}
+
+/* 이미지 로드 실패 시 테마별 대체 배경 */
+.img-fallback {
+  background: linear-gradient(135deg, #dbe7ff 0%, #eef3fb 100%);
+}
+
+/* 모바일 하단 고정 바 안전 영역 */
+.safe-bottom {
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+/* 포커스 링 통일 */
+:where(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0.55;
+}

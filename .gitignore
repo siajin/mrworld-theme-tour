@@ -1,0 +1,35 @@
+# Credentials and private runtime data
+**/.env
+**/.env.*
+!**/.env.example
+**/.vercel/
+**/.agents/
+**/.codex/
+**/.venv/
+**/__pycache__/
+**/*.py[cod]
+**/.pytest_cache/
+**/.ruff_cache/
+**/*.db
+**/*.db-*
+**/*.sqlite*
+backend/data/
+backend/media/*
+!backend/media/.gitkeep
+
+# Generated frontend artifacts
+**/node_modules/
+**/.next/
+frontend/out/
+**/*.tsbuildinfo
+**/npm-debug.log*
+
+# Private coursework and review backups
+/제출/
+/docs/*
+!/docs/api-contract.md
+!/docs/frontend-guide.md
+!/docs/개발계획.md
+
+.DS_Store
+Thumbs.db

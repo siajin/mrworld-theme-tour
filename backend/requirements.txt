@@ -1,0 +1,15 @@
+fastapi[standard]>=0.115
+uvicorn[standard]>=0.30
+sqlalchemy>=2.0
+alembic>=1.13
+pydantic>=2.7
+pydantic-settings>=2.3
+email-validator>=2.1
+passlib[bcrypt]>=1.7.4
+bcrypt>=4.0,<4.1
+python-jose[cryptography]>=3.3
+python-multipart>=0.0.9
+httpx>=0.27
+psycopg[binary]>=3.2  # Postgres 배포용 드라이버 (Neon/Vercel Postgres)
+vercel>=0.1  # Vercel Blob 업로드용 (로컬에선 안 써도 무방)
+pytest>=8.0

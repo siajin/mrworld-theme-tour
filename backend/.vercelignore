@@ -1,0 +1,19 @@
+.venv/
+.pytest_cache/
+.ruff_cache/
+.agents/
+tests/
+data/
+media/
+*.pyc
+__pycache__/
+skills-lock.json
+
+
+# Never upload local secrets or repository metadata
+.env*
+.git
+.vercel
+*.db
+*.sqlite*
+data
